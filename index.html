@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>测测你最像哪种植物</title>
+<meta name="description" content="15 道题，看看你的性格会落在哪一种植物上。">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- 背景装饰叶片 -->
+<div class="deco" aria-hidden="true">
+  <svg class="deco-item d1" viewBox="0 0 200 200"><path d="M100 10 C160 60 175 120 100 190 C25 120 40 60 100 10Z"/><path class="vein" d="M100 20 V180"/></svg>
+  <svg class="deco-item d2" viewBox="0 0 200 200"><circle cx="100" cy="100" r="92"/></svg>
+  <svg class="deco-item d3" viewBox="0 0 200 200"><path d="M100 10 C160 60 175 120 100 190 C25 120 40 60 100 10Z"/></svg>
+  <svg class="deco-item d4" viewBox="0 0 200 200"><circle cx="100" cy="100" r="60"/></svg>
+</div>
+
+<main class="stage">
+
+  <!-- ========== 首页 ========== -->
+  <section class="screen is-active" id="screen-intro">
+    <div class="card intro">
+      <div class="sprout" aria-hidden="true">
+        <svg viewBox="0 0 240 180">
+          <path class="soil" d="M20 150 Q120 138 220 150"/>
+          <path class="stem" d="M120 148 V84"/>
+          <path class="leaf-l" d="M120 108 C96 108 84 96 84 78 C104 74 120 86 120 108Z"/>
+          <path class="leaf-r" d="M120 92 C144 92 156 80 156 62 C136 58 120 70 120 92Z"/>
+          <circle class="seed" cx="120" cy="150" r="9"/>
+        </svg>
+      </div>
+
+      <p class="eyebrow">植物人格测试</p>
+      <h1 class="title">测测你最像<br><em>哪种植物</em></h1>
+      <p class="lede">
+        15 道情境题，不考知识，只需选最像你的那个答案。<br>
+        最后你会落到一种植物上——连同它的习性和养法。
+      </p>
+
+      <ul class="meta">
+        <li><strong>15</strong><span>道题</span></li>
+        <li><strong>4</strong><span>个选项</span></li>
+        <li><strong>3</strong><span>分钟左右</span></li>
+      </ul>
+
+      <button class="btn btn-primary" id="btn-start" type="button">
+        开始测试
+        <svg class="btn-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <p class="note">凭第一感觉选就好，没有标准答案。</p>
+    </div>
+  </section>
+
+  <!-- ========== 答题 ========== -->
+  <section class="screen" id="screen-quiz">
+    <header class="bar">
+      <button class="btn-ghost" id="btn-back" type="button" aria-label="返回上一题">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="15" aria-valuenow="0" id="progress">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+      <span class="count" id="count">1 / 15</span>
+    </header>
+
+    <div class="card quiz" id="quiz-card">
+      <p class="q-index" id="q-index">第 1 题</p>
+      <h2 class="q-text" id="q-text"></h2>
+      <div class="options" id="options"></div>
+    </div>
+
+    <p class="hint" id="hint">键盘按 1 – 4 也能选</p>
+  </section>
+
+  <!-- ========== 结果 ========== -->
+  <section class="screen" id="screen-result">
+    <div class="card result" id="result-card">
+      <div class="result-head">
+        <div class="plant-art" id="plant-art" aria-hidden="true"></div>
+        <div class="plant-headline">
+          <p class="eyebrow" id="r-eyebrow">你的植物是</p>
+          <h2 class="plant-name" id="r-name"></h2>
+          <p class="plant-tag" id="r-tag"></p>
+        </div>
+      </div>
+
+      <div class="fit">
+        <svg class="ring" viewBox="0 0 120 120" aria-hidden="true">
+          <circle class="ring-bg" cx="60" cy="60" r="52"/>
+          <circle class="ring-fg" id="ring-fg" cx="60" cy="60" r="52"/>
+        </svg>
+        <div class="fit-num">
+          <strong id="r-pct">0</strong><span>%</span>
+          <small>契合度</small>
+        </div>
+        <p class="fit-note" id="r-pct-note"></p>
+      </div>
+
+      <p class="plant-desc" id="r-desc"></p>
+
+      <ul class="tags" id="r-tags"></ul>
+
+      <div class="care">
+        <p class="care-title">养护说明</p>
+        <dl class="care-list" id="r-care"></dl>
+      </div>
+
+      <div class="bars">
+        <p class="bars-title">六种成分占比</p>
+        <div id="r-bars"></div>
+      </div>
+
+      <p class="secondary" id="r-second"></p>
+
+      <div class="share">
+        <p class="share-title">测完了，把它丢给朋友</p>
+        <p class="share-sub">生成一张结果卡片，或者复制一段文案发出去。</p>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-primary" id="btn-share" type="button">
+          <svg class="btn-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12v7a1 1 0 001 1h14a1 1 0 001-1v-7M12 16V4M7 9l5-5 5 5" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          生成分享卡片
+        </button>
+        <button class="btn btn-plain" id="btn-copy" type="button">复制结果文案</button>
+        <button class="btn btn-plain" id="btn-retry" type="button">再测一次</button>
+      </div>
+      <p class="toast" id="toast" role="status"></p>
+    </div>
+  </section>
+
+</main>
+
+<!-- ========== 分享卡片浮层 ========== -->
+<div class="sheet" id="sheet" hidden>
+  <div class="sheet-mask" id="sheet-mask"></div>
+  <div class="sheet-body" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+    <p class="sheet-title" id="sheet-title">分享卡片已生成</p>
+    <div class="poster" id="poster"></div>
+    <div class="sheet-actions">
+      <button class="btn btn-primary" id="btn-save" type="button">保存图片</button>
+      <button class="btn btn-plain" id="btn-nativeshare" type="button" hidden>发送给朋友</button>
+    </div>
+    <p class="sheet-tip" id="sheet-tip">手机上长按图片也可以保存</p>
+    <button class="sheet-close" id="sheet-close" type="button">先算了</button>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
