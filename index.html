@@ -117,7 +117,17 @@
 
       <div class="share">
         <p class="share-title">测完了，把它丢给朋友</p>
-        <p class="share-sub">生成一张结果卡片，或者复制一段文案发出去。</p>
+
+        <div class="share-link" id="share-link" hidden>
+          <span class="share-link-key">这是你的专属测试链接</span>
+          <div class="share-link-row">
+            <a class="share-link-url" id="share-url" href="#" target="_blank" rel="noopener noreferrer"></a>
+            <button class="btn btn-ghost" id="btn-copylink" type="button">复制链接</button>
+          </div>
+          <p class="share-link-note">朋友点开就能直接做这套题。</p>
+        </div>
+
+        <p class="share-sub">也可以生成一张结果卡片，或者复制一段带链接的文案发出去。</p>
       </div>
 
       <div class="actions">
