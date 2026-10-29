@@ -329,6 +329,9 @@ const els = {
   pctNote:$('r-pct-note'),
   eyebrow:$('r-eyebrow'),
   copy:   $('btn-copy'),
+  link:   $('share-link'),
+  linkA:  $('share-url'),
+  copyLk: $('btn-copylink'),
   retry:  $('btn-retry'),
   toast:  $('toast'),
   sheet:  $('sheet'),
@@ -478,7 +481,43 @@ function finish() {
   els.rSecond.textContent = '你的第二成分是' + PLANTS[second.k].name + '（占 ' +
     Math.round(second.v / total * 100) + '%）—— 在需要的时候，你会切换成它那一套去应付。';
 
+  setupShareLink();
   show(els.result);
+}
+
+// 干净的地址：不带 hash / query，别把别人的来路参数一起分享出去
+function siteUrl() {
+  if (!/^https?:$/.test(location.protocol)) return '';
+  return location.origin + location.pathname;
+}
+
+function setupShareLink() {
+  const url = siteUrl();
+  if (url) {
+    els.linkA.href = url;
+    els.linkA.textContent = url.replace(/^https?:\/\//, '');
+    els.link.hidden = false;
+  } else {
+    els.link.hidden = true;
+  }
+}
+
+// 复制到剪贴板：优先 Clipboard API，失败降级到 textarea + execCommand
+async function writeClipboard(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch (e) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    const ok = !!document.execCommand && document.execCommand('copy');
+    document.body.removeChild(ta);
+    return ok;
+  }
 }
 
 function noteFor(pct) {
@@ -500,27 +539,24 @@ els.back.addEventListener('click', () => {
 
 els.retry.addEventListener('click', startQuiz);
 
+els.copyLk.addEventListener('click', async () => {
+  const url = siteUrl();
+  if (!url) return;
+  // 部分聊天软件会把 http(s) 之外的东西识别不出来，这里就复制裸 URL
+  const ok = await writeClipboard(url);
+  say(ok ? '链接已复制，直接粘给朋友就能点开' : '复制失败，长按上面的链接试试');
+});
+
 els.copy.addEventListener('click', async () => {
   const p = PLANTS[topKey];
-  const online = /^https?:$/.test(location.protocol);
+  const url = siteUrl();
+  // URL 单独占一行：微信等客户端对整行裸链接的识别率最高
   const text =
-    '【植物人格测试】\n我的结果是：' + p.name + ' · ' + p.tag + '\n' +
-    '契合度 ' + topPct + '%　' + p.tags.join(' / ') + '\n' +
-    (online ? '来测测你最像哪种植物：' + location.href : '');
-  try {
-    await navigator.clipboard.writeText(text);
-    say('已复制，去粘贴给朋友吧');
-  } catch (e) {
-    const ta = document.createElement('textarea');
-    ta.value = text;
-    ta.style.position = 'fixed';
-    ta.style.opacity = '0';
-    document.body.appendChild(ta);
-    ta.select();
-    const ok = document.execCommand && document.execCommand('copy');
-    document.body.removeChild(ta);
-    say(ok ? '已复制，去粘贴给朋友吧' : '复制失败，长按页面上的文字试试');
-  }
+    '【植物人格测试】我是' + p.name + ' · ' + p.tag + '\n' +
+    '契合度 ' + topPct + '%　' + p.tags.join(' / ') + '\n\n' +
+    '十五道题，三分钟，测测你最像哪种植物：\n' + url;
+  const ok = await writeClipboard(text);
+  say(ok ? '已复制，文案里带链接，朋友点开就能测' : '复制失败，改用上面的「复制链接」');
 });
 
 let toastTimer = null;
@@ -683,7 +719,8 @@ async function nativeShare() {
     await navigator.share({
       files: [posterFile],
       title: '植物人格测试',
-      text: '我是' + PLANTS[topKey].name + ' · ' + PLANTS[topKey].tag + '，你呢？'
+      text: '我是' + PLANTS[topKey].name + ' · ' + PLANTS[topKey].tag + '，你呢？',
+      url: siteUrl() || undefined
     });
   } catch (e) {
     if (e && e.name !== 'AbortError') say('没发出去，试试直接保存图片');
